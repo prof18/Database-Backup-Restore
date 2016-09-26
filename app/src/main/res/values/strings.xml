@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">DBTest</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_add_student">AddStudent</string>
+    <string name="title_activity_add_exam">AddExam</string>
+
+    <string-array name="marks">
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>28</item>
+        <item>29</item>
+        <item>30</item>
+    </string-array>
+</resources>
