@@ -17,7 +17,7 @@
         android:text="ID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/text_id"
+        android:id="@+id/text_stud_id"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -26,10 +26,10 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="number"
+
         android:ems="10"
-        android:id="@+id/edit_id"
-        android:layout_below="@+id/text_id"
+        android:id="@+id/edit_stud_id"
+        android:layout_below="@+id/text_stud_id"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:textSize="18sp" />
@@ -38,43 +38,43 @@
         android:text="Name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/edit_id"
+        android:layout_below="@+id/edit_stud_id"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/text_student" />
+        android:id="@+id/text_name" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
-        android:layout_below="@+id/text_student"
+        android:layout_below="@+id/text_name"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/edit_student" />
+        android:id="@+id/edit_name" />
 
     <TextView
         android:text="Surname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/edit_student"
-        android:id="@+id/text_eval" />
+        android:layout_below="@+id/edit_name"
+        android:id="@+id/text_surname" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
-        android:layout_below="@+id/text_eval"
+        android:layout_below="@+id/text_surname"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/edit_eval" />
+        android:id="@+id/edit_surname" />
 
     <TextView
         android:text="Date of birth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/edit_eval"
+        android:layout_below="@+id/edit_surname"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/text_date" />

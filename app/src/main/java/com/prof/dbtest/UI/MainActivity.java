@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.facebook.stetho.Stetho;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.prof.dbtest.R;
 

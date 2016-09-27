@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:id="@+id/edit_id"
+        android:id="@+id/edit_exam_id"
         android:layout_below="@+id/text_id"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -38,7 +38,7 @@
         android:text="Student"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/edit_id"
+        android:layout_below="@+id/edit_exam_id"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/text_student" />

@@ -59,8 +59,8 @@ public class DBHelper extends SQLiteOpenHelper {
             EX_ID + INTEGER + "," +
             EX_STUDENT + INTEGER + "," +
             EX_VAL + INTEGER + "," +
-            "PRIMARY KEY (" + EX_ID + "," + EX_STUDENT + ")," +
-            "FOREIGN KEY (" + EX_STUDENT + ") REFERENCE (" + TABLE_STUDENTS + "(" + STUD_ID + ")" +
+            "PRIMARY KEY (" + EX_ID + "," + EX_STUDENT + ")" +
+           /* "FOREIGN KEY (" + EX_STUDENT + ") REFERENCE " + TABLE_STUDENTS + "(" + STUD_ID + ")" +*/
             ")";
 
     //Table Delete Statement
