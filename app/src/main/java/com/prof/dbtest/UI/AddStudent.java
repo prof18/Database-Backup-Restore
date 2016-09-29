@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,9 +30,9 @@ public class AddStudent extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.stoolbar);
         setSupportActionBar(toolbar);
 
-        final TextView editId = (TextView) findViewById(R.id.edit_stud_id);
-        final TextView editName = (TextView) findViewById(R.id.edit_name);
-        final TextView editSurname = (TextView) findViewById(R.id.edit_surname);
+        final EditText editId = (EditText) findViewById(R.id.edit_stud_id);
+        final EditText editName = (EditText) findViewById(R.id.edit_name);
+        final EditText editSurname = (EditText) findViewById(R.id.edit_surname);
         final TextView editDate = (TextView) findViewById(R.id.edit_date);
 
         db = new DBHelper(getApplicationContext());

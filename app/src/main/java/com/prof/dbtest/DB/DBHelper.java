@@ -60,7 +60,7 @@ public class DBHelper extends SQLiteOpenHelper {
             EX_STUDENT + INTEGER + "," +
             EX_VAL + INTEGER + "," +
             "PRIMARY KEY (" + EX_ID + "," + EX_STUDENT + ")" +
-           /* "FOREIGN KEY (" + EX_STUDENT + ") REFERENCE " + TABLE_STUDENTS + "(" + STUD_ID + ")" +*/
+            "FOREIGN KEY(" + EX_STUDENT + ") REFERENCES " + TABLE_STUDENTS + "(" + STUD_ID + ")" +
             ")";
 
     //Table Delete Statement
@@ -136,8 +136,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(query,null);
-        if (c.moveToFirst()) {
-            while(c.moveToNext()) {
+        if (c!= null) {
+            //c.moveToFirst();
+            while (c.moveToNext()) {
 
                 Student student = new Student();
                 student.setId(c.getInt(c.getColumnIndex(STUD_ID)));
@@ -161,7 +162,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(query,null);
-        if (c.moveToFirst()) {
+        if (c != null) {
             while(c.moveToNext()) {
 
                 Exam e = new Exam();
@@ -174,6 +175,25 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         c.close();
         return exams;
+    }
+
+    public ArrayList<String> getStudId() {
+
+        ArrayList<String> idList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT " + STUD_ID + " FROM " + TABLE_STUDENTS;
+
+        Cursor c = db.rawQuery(query,null);
+        if (c != null) {
+
+            while(c.moveToNext()) {
+                int id = c.getInt(c.getColumnIndex(STUD_ID));
+                idList.add(String.valueOf(id));
+            }
+        }
+
+        c.close();
+        return  idList;
     }
 
     //select single student
