@@ -1,9 +1,19 @@
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Marco Gomiero
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package com.prof.dbtest.DB;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteBindOrColumnIndexOutOfRangeException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -11,10 +21,6 @@ import com.prof.dbtest.Data.Exam;
 import com.prof.dbtest.Data.Student;
 
 import java.util.ArrayList;
-
-/**
- * Created by marco on 9/25/16.
- **/
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -137,7 +143,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(query,null);
         if (c!= null) {
-            //c.moveToFirst();
+
             while (c.moveToNext()) {
 
                 Student student = new Student();
@@ -163,6 +169,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(query,null);
         if (c != null) {
+
             while(c.moveToNext()) {
 
                 Exam e = new Exam();
@@ -177,6 +184,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return exams;
     }
 
+    //get all stud id
     public ArrayList<String> getStudId() {
 
         ArrayList<String> idList = new ArrayList<>();
@@ -195,73 +203,6 @@ public class DBHelper extends SQLiteOpenHelper {
         c.close();
         return  idList;
     }
-
-    //select single student
-    public Student getStudent(int id) {
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_STUDENTS + " WHERE " + STUD_ID + " = " + id;
-
-        Cursor c = db.rawQuery(query,null);
-        if(c != null)
-            c.moveToFirst();
-
-        Student stud = new Student();
-        stud.setId(c.getInt(c.getColumnIndex(STUD_ID)));
-        stud.setName(c.getString(c.getColumnIndex(STUD_NAME)));
-        stud.setSurname(c.getString(c.getColumnIndex(STUD_SURNAME)));
-        stud.setBorn(c.getLong(c.getColumnIndex(STUD_BORN)));
-
-        c.close();
-        return stud;
-    }
-
-    //select single exam
-    public Exam getExam(int id) {
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_EXAMS + " WHERE " + EX_ID + " = " + id;
-
-        Cursor c = db.rawQuery(query,null);
-        if ( c!= null)
-            c.moveToFirst();
-
-        Exam e = new Exam();
-        e.setId(c.getInt(c.getColumnIndex(EX_ID)));
-        e.setStudent(c.getInt(c.getColumnIndex(EX_STUDENT)));
-        e.setEvaluation(c.getInt(c.getColumnIndex(EX_VAL)));
-
-        c.close();
-        return e;
-    }
-
-    //update a student
-    public int updateStudent(Student stud) {
-
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values  = new ContentValues();
-        values.put(STUD_ID,stud.getId());
-        values.put(STUD_NAME,stud.getName());
-        values.put(STUD_SURNAME,stud.getSurname());
-        values.put(STUD_BORN,stud.getBorn());
-
-        return db.update(TABLE_STUDENTS,values,STUD_ID + " = ? ", new String[] {String.valueOf(stud.getId())});
-    }
-
-    //update an exam
-    public int updateExam(Exam e) {
-
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(EX_ID,e.getId());
-        values.put(EX_STUDENT,e.getStudent());
-        values.put(EX_VAL,e.getEvaluation());
-
-        return db.update(TABLE_EXAMS,values,EX_ID + " = ? ", new String[] {String.valueOf(e.getId())});
-    }
-
 
     //delete a student
     public void deleteStud(int id) {
@@ -286,5 +227,4 @@ public class DBHelper extends SQLiteOpenHelper {
         if (db != null && db.isOpen())
             db.close();
     }
-
 }
