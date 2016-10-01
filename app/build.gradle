@@ -27,6 +27,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
     compile 'com.getbase:floatingactionbutton:1.10.1'
-    debugCompile 'com.facebook.stetho:stetho:1.2.0'
+    compile 'com.facebook.stetho:stetho:1.2.0'
     testCompile 'junit:junit:4.12'
 }

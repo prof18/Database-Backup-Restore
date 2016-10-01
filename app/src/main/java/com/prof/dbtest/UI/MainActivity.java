@@ -13,6 +13,7 @@ package com.prof.dbtest.UI;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -106,13 +107,17 @@ public class MainActivity extends AppCompatActivity {
                 TextView tvDateTItle = new TextView(getApplicationContext());
 
                 tvIdTitle.setText("ID");
-                tvIdTitle.setTextSize(23);
+                tvIdTitle.setTextSize(20);
+                tvIdTitle.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
                 tvNameTitle.setText("Name");
-                tvNameTitle.setTextSize(23);
+                tvNameTitle.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
+                tvNameTitle.setTextSize(20);
                 tvSurnameTitle.setText("Surname");
-                tvSurnameTitle.setTextSize(23);
+                tvSurnameTitle.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
+                tvSurnameTitle.setTextSize(20);
                 tvDateTItle.setText(String.valueOf("Date of Born"));
-                tvDateTItle.setTextSize(23);
+                tvDateTItle.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
+                tvDateTItle.setTextSize(20);
 
                 row.addView(tvIdTitle,rLayoutParamsTR);
                 row.addView(tvNameTitle,rLayoutParamsTR);
@@ -178,11 +183,14 @@ public class MainActivity extends AppCompatActivity {
 
                 //table population
                 TextView tvIdTitle = new TextView(getApplicationContext());
-                tvIdTitle.setTextSize(25);
+                tvIdTitle.setTextSize(20);
+                tvIdTitle.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
                 TextView tvNameTitle = new TextView(getApplicationContext());
-                tvNameTitle.setTextSize(25);
+                tvNameTitle.setTextSize(20);
+                tvNameTitle.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
                 TextView tvSurnameTitle = new TextView(getApplicationContext());
-                tvSurnameTitle.setTextSize(25);
+                tvSurnameTitle.setTextSize(20);
+                tvSurnameTitle.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
 
                 tvIdTitle.setText("Exam ID");
                 tvNameTitle.setText("Student ID");
