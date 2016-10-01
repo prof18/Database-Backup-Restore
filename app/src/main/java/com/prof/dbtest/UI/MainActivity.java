@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                 tvSurnameTitle.setText("Surname");
                 tvSurnameTitle.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
                 tvSurnameTitle.setTextSize(20);
-                tvDateTItle.setText(String.valueOf("Date of Born"));
+                tvDateTItle.setText(String.valueOf("Birth"));
                 tvDateTItle.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
                 tvDateTItle.setTextSize(20);
 
@@ -151,9 +151,13 @@ public class MainActivity extends AppCompatActivity {
                     String dateString = formatter.format(new Date(millis));
 
                     tvId.setText(String.valueOf(id));
+                    tvId.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
                     tvName.setText(name);
+                    tvName.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
                     tvSurname.setText(surname);
+                    tvSurname.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
                     tvDate.setText(dateString);
+                    tvDate.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
 
                     rowEl.addView(tvId,rLayoutParams);
                     rowEl.addView(tvName,rLayoutParams);
@@ -194,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
 
                 tvIdTitle.setText("Exam ID");
                 tvNameTitle.setText("Student ID");
-                tvSurnameTitle.setText("Evaluation");
+                tvSurnameTitle.setText("Mark");
 
                 row.addView(tvIdTitle,rLayoutParamsTR);
                 row.addView(tvNameTitle,rLayoutParamsTR);
@@ -222,8 +226,11 @@ public class MainActivity extends AppCompatActivity {
                     TextView tvSurname = new TextView(getApplicationContext());
 
                     tvId.setText(String.valueOf(id));
+                    tvId.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
                     tvName.setText(String.valueOf(stud));
+                    tvName.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
                     tvSurname.setText(String.valueOf(eval));
+                    tvSurname.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
 
                     rowEl.addView(tvId,rLayoutParams);
                     rowEl.addView(tvName,rLayoutParams);

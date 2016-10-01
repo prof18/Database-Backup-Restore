@@ -11,15 +11,18 @@
 
 package com.prof.dbtest.UI;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.prof.dbtest.DB.DBHelper;
@@ -51,6 +54,18 @@ public class AddExam extends AppCompatActivity {
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item,idList);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         stud_id.setAdapter(spinnerAdapter);
+        stud_id.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+           @Override
+           public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+               ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
+           }
+
+           @Override
+           public void onNothingSelected(AdapterView<?> parent) {
+
+           }
+       });
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.addEx);
         //add a new exam when the fab is clicked
