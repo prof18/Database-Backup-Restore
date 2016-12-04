@@ -1,13 +1,19 @@
 /*
- * The MIT License (MIT)
- * Copyright (c) 2016 Marco Gomiero
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+*   Copyright 2016 Marco Gomiero
+*
+*   Licensed under the Apache License, Version 2.0 (the "License");
+*   you may not use this file except in compliance with the License.
+*   You may obtain a copy of the License at
+*
+*       http://www.apache.org/licenses/LICENSE-2.0
+*
+*   Unless required by applicable law or agreed to in writing, software
+*   distributed under the License is distributed on an "AS IS" BASIS,
+*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*   See the License for the specific language governing permissions and
+*   limitations under the License.
+*
+*/
 
 package com.prof.dbtest.DB;
 
@@ -16,11 +22,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
 
 import com.prof.dbtest.Data.Exam;
 import com.prof.dbtest.Data.Student;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -28,7 +40,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     //Database Name
-    private static final String DATABASE_NAME = "studentsManager";
+    public static final String DATABASE_NAME = "studentsManager";
 
     //Data Type
     private static final String TEXT = " TEXT ";
@@ -36,7 +48,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     //Tables Name
     private static final String TABLE_STUDENTS = "students";
-    private static final String TABLE_EXAMS =  "exams";
+    private static final String TABLE_EXAMS = "exams";
 
     //STUDENTS Table - column name
     private static final String STUD_ID = "id";
@@ -72,13 +84,18 @@ public class DBHelper extends SQLiteOpenHelper {
     //Table Delete Statement
 
     //Students Table
-    private static final String DELETE_STUDENTS = "DROP TABLE IF EXIST " + TABLE_STUDENTS;
+    private static final String DELETE_STUDENTS = "DROP TABLE IF EXISTS " + TABLE_STUDENTS;
 
     //Exams Table
-    private static final String DELETE_EXAMS = "DROP TABLE IF EXIST " + TABLE_EXAMS;
+    private static final String DELETE_EXAMS = "DROP TABLE IF EXISTS " + TABLE_EXAMS;
+
+    //context
+    private Context mContext;
+
 
     public DBHelper(Context context) {
-        super(context, DATABASE_NAME,null,DATABASE_VERSION);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        mContext = context;
     }
 
     @Override
@@ -99,6 +116,12 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void deleteAll(SQLiteDatabase db) {
+
+        db.execSQL(DELETE_STUDENTS);
+        db.execSQL(DELETE_EXAMS);
+    }
+
     //create a new student
     public long addStudent(Student stud) {
 
@@ -107,15 +130,13 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(STUD_ID,stud.getId());
-        values.put(STUD_NAME,stud.getName());
-        values.put(STUD_SURNAME,stud.getSurname());
-        values.put(STUD_BORN,stud.getBorn());
+        values.put(STUD_ID, stud.getId());
+        values.put(STUD_NAME, stud.getName());
+        values.put(STUD_SURNAME, stud.getSurname());
+        values.put(STUD_BORN, stud.getBorn());
 
         // Create a new map of values, where column names are the keys
-        long id = db.insert(TABLE_STUDENTS,null,values);
-
-        return id;
+        return db.insert(TABLE_STUDENTS, null, values);
     }
 
     //create a new exam
@@ -124,13 +145,11 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(EX_ID,exam.getId());
-        values.put(EX_STUDENT,exam.getStudent());
-        values.put(EX_VAL,exam.getEvaluation());
+        values.put(EX_ID, exam.getId());
+        values.put(EX_STUDENT, exam.getStudent());
+        values.put(EX_VAL, exam.getEvaluation());
 
-        long id = db.insert(TABLE_EXAMS,null,values);
-
-        return id;
+        return db.insert(TABLE_EXAMS, null, values);
     }
 
     //get all students
@@ -141,9 +160,8 @@ public class DBHelper extends SQLiteOpenHelper {
         String query = "SELECT * FROM " + TABLE_STUDENTS;
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(query,null);
-        if (c!= null) {
-
+        Cursor c = db.rawQuery(query, null);
+        if (c != null) {
             while (c.moveToNext()) {
 
                 Student student = new Student();
@@ -167,10 +185,9 @@ public class DBHelper extends SQLiteOpenHelper {
         String query = "SELECT * FROM " + TABLE_EXAMS;
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(query,null);
+        Cursor c = db.rawQuery(query, null);
         if (c != null) {
-
-            while(c.moveToNext()) {
+            while (c.moveToNext()) {
 
                 Exam e = new Exam();
                 e.setId(c.getInt(c.getColumnIndex(EX_ID)));
@@ -191,32 +208,33 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT " + STUD_ID + " FROM " + TABLE_STUDENTS;
 
-        Cursor c = db.rawQuery(query,null);
+        Cursor c = db.rawQuery(query, null);
         if (c != null) {
-
-            while(c.moveToNext()) {
+            while (c.moveToNext()) {
                 int id = c.getInt(c.getColumnIndex(STUD_ID));
                 idList.add(String.valueOf(id));
             }
         }
-
         c.close();
-        return  idList;
+        return idList;
     }
 
     //delete a student
     public void deleteStud(int id) {
 
         SQLiteDatabase db = getWritableDatabase();
-        db.delete(TABLE_STUDENTS,STUD_ID + " = ? ", new String[] {String.valueOf(id)});
+        db.delete(TABLE_STUDENTS, STUD_ID + " = ? ", new String[]{String.valueOf(id)});
     }
 
     //delete an exam
     public void deleteExam(int id) {
 
         SQLiteDatabase db = getWritableDatabase();
-        db.delete(TABLE_EXAMS,EX_ID + " = ? ", new String[] {String.valueOf(id)});
+        db.delete(TABLE_EXAMS, EX_ID + " = ? ", new String[]{String.valueOf(id)});
+    }
 
+    public static int getDatabaseVersion() {
+        return DATABASE_VERSION;
     }
 
     //close database
@@ -226,5 +244,71 @@ public class DBHelper extends SQLiteOpenHelper {
 
         if (db != null && db.isOpen())
             db.close();
+    }
+
+
+    public void backup(String outFileName) {
+
+        //database path
+        final String inFileName = mContext.getDatabasePath(DATABASE_NAME).toString();
+
+        try {
+
+            File dbFile = new File(inFileName);
+            FileInputStream fis = new FileInputStream(dbFile);
+
+            // Open the empty db as the output stream
+            OutputStream output = new FileOutputStream(outFileName);
+
+            // Transfer bytes from the input file to the output file
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = fis.read(buffer)) > 0) {
+                output.write(buffer, 0, length);
+            }
+
+            // Close the streams
+            output.flush();
+            output.close();
+            fis.close();
+
+            Toast.makeText(mContext, "Backup Completed", Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            Toast.makeText(mContext, "Unable to backup database. Retry", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+    public void importDB(String outFileName) {
+
+        final String inFileName = mContext.getDatabasePath(DATABASE_NAME).toString();
+
+        try {
+
+            File dbFile = new File(outFileName);
+            FileInputStream fis = new FileInputStream(dbFile);
+
+            // Open the empty db as the output stream
+            OutputStream output = new FileOutputStream(inFileName);
+
+            // Transfer bytes from the input file to the output file
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = fis.read(buffer)) > 0) {
+                output.write(buffer, 0, length);
+            }
+
+            // Close the streams
+            output.flush();
+            output.close();
+            fis.close();
+
+            Toast.makeText(mContext, "Import Completed", Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            Toast.makeText(mContext, "Unable to import database. Retry", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 }

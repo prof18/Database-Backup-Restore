@@ -3,6 +3,11 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_add_student">AddStudent</string>
     <string name="title_activity_add_exam">AddExam</string>
+    <string name="action_backup">Backup</string>
+    <string name="action_backup_drive">Backup to Drive</string>
+    <string name="action_import">Import</string>
+    <string name="action_import_drive">Import from Drive</string>
+    <string name="action_clear_data">Clear All Data</string>
 
     <string-array name="marks">
         <item>18</item>
