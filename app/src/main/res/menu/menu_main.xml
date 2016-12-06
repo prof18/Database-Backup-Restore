@@ -14,7 +14,7 @@
         android:title="@string/action_import"
         app:showAsAction="never" />
 
-    <!--<item
+    <item
         android:id="@+id/action_backup_Drive"
         android:orderInCategory="100"
         android:title="@string/action_backup_drive"
@@ -24,7 +24,7 @@
         android:id="@+id/action_import_Drive"
         android:orderInCategory="100"
         android:title="@string/action_import_drive"
-        app:showAsAction="never" />-->
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_delete_all"

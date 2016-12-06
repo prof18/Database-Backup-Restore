@@ -21,16 +21,20 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,21 +47,45 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.drive.Drive;
+import com.google.android.gms.drive.DriveApi;
+import com.google.android.gms.drive.DriveContents;
+import com.google.android.gms.drive.DriveFile;
+import com.google.android.gms.drive.DriveId;
+import com.google.android.gms.drive.MetadataChangeSet;
+import com.google.android.gms.drive.OpenFileActivityBuilder;
 import com.prof.dbtest.DB.DBHelper;
 import com.prof.dbtest.Data.Exam;
 import com.prof.dbtest.Data.Student;
 import com.prof.dbtest.R;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static com.prof.dbtest.DB.DBHelper.DATABASE_NAME;
 import static com.prof.dbtest.DB.DBHelper.getDatabaseVersion;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    String outFileName = null;
+    private GoogleApiClient mGoogleApiClient;
+    private static final String TAG = "Google Drive Activity";
+
+    private static final int REQUEST_CODE_OPENER = 1;
+    private static final int REQUEST_CODE_CREATOR = 2;
+    private static final int REQUEST_CODE_RESOLUTION = 3;
+
+    //variable for decide if i need to do a backup or a restore.
+    //True stands for backup, False for restore
+    private boolean bckORrst = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -298,94 +326,328 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         final DBHelper db = new DBHelper(getApplicationContext());
 
-        //ask to the user a name for the backup and perform it. The backup will be saved to a custom folder.
-        if (id == R.id.action_backup) {
+        switch (id) {
 
-            verifyStoragePermissions(this);
-            outFileName = Environment.getExternalStorageDirectory() + File.separator + "DBTest" + File.separator;
-            File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "DBTest");
-
-            boolean success = true;
-            if (!folder.exists())
-                success = folder.mkdirs();
-            if (success) {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Backup Name");
-                final EditText input = new EditText(this);
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                builder.setView(input);
-                builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String m_Text = input.getText().toString();
-                        outFileName = outFileName + m_Text + ".db";
-                        db.backup(outFileName);
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                builder.show();
-            } else
-                Toast.makeText(this, "Unable to create directory. Retry", Toast.LENGTH_SHORT).show();
+            case R.id.action_backup:
+                String outFileName = Environment.getExternalStorageDirectory() + File.separator + getResources().getString(R.string.app_name) + File.separator;
+                performBackup(db, outFileName);
+                break;
+            case R.id.action_import:
+                performRestore(db);
+                break;
+            case R.id.action_backup_Drive:
+                bckORrst = true;
+                if (mGoogleApiClient != null)
+                    mGoogleApiClient.disconnect();
+                mGoogleApiClient = gApiCLient(mGoogleApiClient);
+                mGoogleApiClient.connect();
+                break;
+            case R.id.action_import_Drive:
+                bckORrst = false;
+                if (mGoogleApiClient != null)
+                    mGoogleApiClient.disconnect();
+                mGoogleApiClient = gApiCLient(mGoogleApiClient);
+                mGoogleApiClient.connect();
+                break;
+            case R.id.action_delete_all:
+                //reinitialize the backup
+                SQLiteDatabase database = db.getWritableDatabase();
+                db.onUpgrade(database, getDatabaseVersion(), getDatabaseVersion());
+                TableLayout table = (TableLayout) findViewById(R.id.table);
+                table.removeAllViews();
+                break;
+            default:
+                break;
         }
 
-        //ask to the user what backup to restore
-        if (id == R.id.action_import) {
-
-            verifyStoragePermissions(this);
-
-            File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "DBTest");
-            if (folder.exists()) {
-
-                final File[] files = folder.listFiles();
-
-                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item);
-                for (File file : files)
-                    arrayAdapter.add(file.getName());
-
-                AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
-                builderSingle.setTitle("Restore:");
-                builderSingle.setNegativeButton(
-                        "cancel",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                builderSingle.setAdapter(
-                        arrayAdapter,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                try {
-                                    db.importDB(files[which].getPath());
-                                } catch (Exception e) {
-                                    Toast.makeText(MainActivity.this, "Unable to restore. Retry", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-                builderSingle.show();
-            } else
-                Toast.makeText(this, "Backup folder not present.\nDo a backup before a restore!", Toast.LENGTH_SHORT).show();
-        }
-
-        //reinitialize the backup
-        if (id == R.id.action_delete_all) {
-
-            SQLiteDatabase database = db.getWritableDatabase();
-            db.onUpgrade(database, getDatabaseVersion(), getDatabaseVersion());
-            TableLayout table = (TableLayout) findViewById(R.id.table);
-            table.removeAllViews();
-        }
         return super.onOptionsItemSelected(item);
     }
+
+    //ask to the user a name for the backup and perform it. The backup will be saved to a custom folder.
+    private void performBackup(final DBHelper db, final String outFileName) {
+
+        verifyStoragePermissions(this);
+
+        File folder = new File(Environment.getExternalStorageDirectory() + File.separator + getResources().getString(R.string.app_name));
+
+        boolean success = true;
+        if (!folder.exists())
+            success = folder.mkdirs();
+        if (success) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Backup Name");
+            final EditText input = new EditText(this);
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            builder.setView(input);
+            builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String m_Text = input.getText().toString();
+                    String out = outFileName + m_Text + ".db";
+                    db.backup(out);
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
+        } else
+            Toast.makeText(this, "Unable to create directory. Retry", Toast.LENGTH_SHORT).show();
+    }
+
+    //ask to the user what backup to restore
+    private void performRestore(final DBHelper db) {
+
+        verifyStoragePermissions(this);
+
+        File folder = new File(Environment.getExternalStorageDirectory() + File.separator + getResources().getString(R.string.app_name));
+        if (folder.exists()) {
+
+            final File[] files = folder.listFiles();
+
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item);
+            for (File file : files)
+                arrayAdapter.add(file.getName());
+
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+            builderSingle.setTitle("Restore:");
+            builderSingle.setNegativeButton(
+                    "cancel",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            builderSingle.setAdapter(
+                    arrayAdapter,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            try {
+                                db.importDB(files[which].getPath());
+                            } catch (Exception e) {
+                                Toast.makeText(MainActivity.this, "Unable to restore. Retry", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+            builderSingle.show();
+        } else
+            Toast.makeText(this, "Backup folder not present.\nDo a backup before a restore!", Toast.LENGTH_SHORT).show();
+    }
+
+    private void saveFileToDrive() {
+
+        //database path on the device
+        final String inFileName = getApplicationContext().getDatabasePath(DATABASE_NAME).toString();
+
+        Drive.DriveApi.newDriveContents(mGoogleApiClient).setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
+
+            @Override
+            public void onResult(@NonNull DriveApi.DriveContentsResult driveContentsResult) {
+
+                if (!driveContentsResult.getStatus().isSuccess()) {
+                    Log.i(TAG, "Failed to create new Drive backup.");
+                    Toast.makeText(MainActivity.this, "Error on loading Google Drive. Retry", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Log.i(TAG, "Backup to drive started.");
+
+                try {
+
+                    File dbFile = new File(inFileName);
+                    FileInputStream fis = new FileInputStream(dbFile);
+                    OutputStream outputStream = driveContentsResult.getDriveContents().getOutputStream();
+
+                    // Transfer bytes from the inputfile to the outputfile
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = fis.read(buffer)) > 0) {
+                        outputStream.write(buffer, 0, length);
+                    }
+
+                    //drive file metadata
+                    MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
+                            .setTitle("database_backup.db")
+                            .setMimeType("application/db")
+                            .build();
+
+                    // Create an intent for the file chooser, and start it.
+                    IntentSender intentSender = Drive.DriveApi
+                            .newCreateFileActivityBuilder()
+                            .setInitialMetadata(metadataChangeSet)
+                            .setInitialDriveContents(driveContentsResult.getDriveContents())
+                            .build(mGoogleApiClient);
+
+                    startIntentSenderForResult(intentSender, REQUEST_CODE_CREATOR, null, 0, 0, 0);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+    
+    private void importFromDrive(DriveFile dbFile) {
+
+        //database path on the device
+        final String inFileName = getApplicationContext().getDatabasePath(DATABASE_NAME).toString();
+
+        dbFile.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null).setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
+
+            @Override
+            public void onResult(@NonNull DriveApi.DriveContentsResult driveContentsResult) {
+
+                if (!driveContentsResult.getStatus().isSuccess()) {
+                    Log.i(TAG, "Failed to open Drive backup.");
+                    Toast.makeText(MainActivity.this, "Error on loading from Google Drive. Retry", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Log.i(TAG, "Backup to drive started.");
+
+                // DriveContents object contains pointers to the actual byte stream
+                DriveContents contents = driveContentsResult.getDriveContents();
+
+                try {
+
+                    ParcelFileDescriptor parcelFileDescriptor = contents.getParcelFileDescriptor();
+                    FileInputStream fileInputStream = new FileInputStream(parcelFileDescriptor.getFileDescriptor());
+
+                    // Open the empty db as the output stream
+                    OutputStream output = new FileOutputStream(inFileName);
+
+                    // Transfer bytes from the inputfile to the outputfile
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = fileInputStream.read(buffer)) > 0) {
+                        output.write(buffer, 0, length);
+                    }
+
+                    // Close the streams
+                    output.flush();
+                    output.close();
+                    fileInputStream.close();
+
+                    Toast.makeText(getApplicationContext(), "Import Completed", Toast.LENGTH_SHORT).show();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Error on loading", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    //Connect the Client
+    private GoogleApiClient gApiCLient(GoogleApiClient mGoogleApiClient) {
+
+        if (mGoogleApiClient == null) {
+
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(Drive.API)
+                    .addScope(Drive.SCOPE_FILE)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+        }
+        return mGoogleApiClient;
+    }
+
+    @Override
+    // Called whenever the API client fails to connect.
+    public void onConnectionFailed(ConnectionResult result) {
+
+        Log.i(TAG, "GoogleApiClient connection failed: " + result.toString());
+        if (!result.hasResolution()) {
+            // show the localized error dialog.
+            GoogleApiAvailability.getInstance().getErrorDialog(this, result.getErrorCode(), 0).show();
+            return;
+        }
+
+        try {
+            result.startResolutionForResult(this, REQUEST_CODE_RESOLUTION);
+        } catch (IntentSender.SendIntentException e) {
+            Log.e(TAG, "Exception while starting resolution activity", e);
+        }
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Log.i(TAG, "API client connected.");
+
+        //when the client is connected i have two possibility: backup (bckORrst -> true) or restore (bckORrst -> false)
+        if (bckORrst)
+            saveFileToDrive();
+        else {
+            IntentSender intentSender = Drive.DriveApi
+                    .newOpenFileActivityBuilder()
+                    .setMimeType(new String[]{"application/db"})
+                    .build(mGoogleApiClient);
+            try {
+                startIntentSenderForResult(intentSender, REQUEST_CODE_OPENER, null, 0, 0, 0);
+                Log.i(TAG, "Open File Intent send");
+            } catch (IntentSender.SendIntentException e) {
+                Log.w(TAG, "Unable to send Open File Intent", e);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        switch (requestCode) {
+
+            case REQUEST_CODE_CREATOR:
+                // Called after a file is saved to Drive.
+                if (resultCode == RESULT_OK) {
+                    Log.i(TAG, "Backup successfully saved.");
+                    Toast.makeText(this, "Backup successufly loaded!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case REQUEST_CODE_OPENER:
+                if (resultCode == RESULT_OK) {
+                    DriveId driveId = data.getParcelableExtra(
+                            OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
+                    //Toast.makeText(this, driveId.toString(), Toast.LENGTH_SHORT).show();
+                    DriveFile file = driveId.asDriveFile();
+                    importFromDrive(file);
+                }
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        Log.i(TAG, "GoogleApiClient connection suspended");
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient != null)
+            mGoogleApiClient.disconnect();
+    }
+
+    @Override
+    protected void onResume() {
+        if (mGoogleApiClient != null)
+            mGoogleApiClient.disconnect();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        if (mGoogleApiClient != null)
+            mGoogleApiClient.disconnect();
+        super.onPause();
+    }
+
 
     // Storage Permissions variables
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
