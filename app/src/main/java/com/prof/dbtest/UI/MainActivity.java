@@ -492,7 +492,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
     }
-    
+
     private void importFromDrive(DriveFile dbFile) {
 
         //database path on the device
@@ -633,22 +633,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (mGoogleApiClient != null)
             mGoogleApiClient.disconnect();
     }
-
-    @Override
-    protected void onResume() {
-        if (mGoogleApiClient != null)
-            mGoogleApiClient.disconnect();
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        if (mGoogleApiClient != null)
-            mGoogleApiClient.disconnect();
-        super.onPause();
-    }
-
-
+    
     // Storage Permissions variables
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
