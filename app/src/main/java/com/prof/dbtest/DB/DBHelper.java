@@ -109,7 +109,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-        //reinizialize db
+        //reinitialize db
         db.execSQL(DELETE_STUDENTS);
         db.execSQL(DELETE_EXAMS);
 
@@ -280,17 +280,17 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void importDB(String outFileName) {
+    public void importDB(String inFileName) {
 
-        final String inFileName = mContext.getDatabasePath(DATABASE_NAME).toString();
+        final String outFileName = mContext.getDatabasePath(DATABASE_NAME).toString();
 
         try {
 
-            File dbFile = new File(outFileName);
+            File dbFile = new File(inFileName);
             FileInputStream fis = new FileInputStream(dbFile);
 
             // Open the empty db as the output stream
-            OutputStream output = new FileOutputStream(inFileName);
+            OutputStream output = new FileOutputStream(outFileName);
 
             // Transfer bytes from the input file to the output file
             byte[] buffer = new byte[1024];

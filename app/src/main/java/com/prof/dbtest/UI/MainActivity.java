@@ -87,6 +87,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     //True stands for backup, False for restore
     private boolean bckORrst = true;
 
+    private Button showStud;
+    private Button showExam;
+    private Button clear;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,9 +136,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         });
 
         //button that shows student, exam and clears the view
-        final Button showStud = (Button) findViewById(R.id.button);
-        final Button showExam = (Button) findViewById(R.id.button2);
-        final Button clear = (Button) findViewById(R.id.button3);
+        showStud = (Button) findViewById(R.id.button);
+        showExam = (Button) findViewById(R.id.button2);
+        clear = (Button) findViewById(R.id.button3);
 
         showStud.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -633,7 +637,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (mGoogleApiClient != null)
             mGoogleApiClient.disconnect();
     }
-    
+
     // Storage Permissions variables
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {

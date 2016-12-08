@@ -96,7 +96,6 @@ public class AddStudent extends AppCompatActivity {
                 finish();
             }
         });
-
         db.closeDB();
     }
 
