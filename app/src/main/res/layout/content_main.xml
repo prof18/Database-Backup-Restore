@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_main"
     android:layout_width="match_parent"
@@ -11,40 +10,24 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.prof.dbtest.UI.MainActivity"
+    tools:context="com.prof.dbtest.ui.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <com.getbase.floatingactionbutton.FloatingActionsMenu
-        android:id="@+id/multiple_actions"
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        fab:fab_addButtonColorNormal="@color/colorAccent"
-        fab:fab_addButtonColorPressed="@color/white_pressed"
-        fab:fab_addButtonPlusIconColor="@color/white"
-        fab:fab_labelStyle="@style/menu_labels_style">
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_a"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/colorAccent"
-            fab:fab_colorPressed="@color/white_pressed"
-            fab:fab_icon="@drawable/ic_add_white_24dp"
-            fab:fab_title="Add Student" />
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_b"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/colorAccent"
-            fab:fab_colorPressed="@color/white_pressed"
-            fab:fab_icon="@drawable/ic_add_white_24dp"
-            fab:fab_title="Add Exam" />
-
-    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="11dp"
+        android:layout_marginRight="11dp"
+        app:elevation="0dp"
+        app:srcCompat="@drawable/ic_add" />
 
     <HorizontalScrollView
         android:layout_width="wrap_content"
@@ -57,8 +40,7 @@
             android:id="@+id/table"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="35dp">
-        </TableLayout>
+            android:layout_marginTop="35dp" />
     </HorizontalScrollView>
 
     <Button

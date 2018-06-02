@@ -24,4 +24,5 @@
         <item>29</item>
         <item>30</item>
     </string-array>
+    <string name="title_activity_main2">Main2Activity</string>
 </resources>

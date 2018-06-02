@@ -1,21 +1,22 @@
 /*
-*   Copyright 2016 Marco Gomiero
-*
-*   Licensed under the Apache License, Version 2.0 (the "License");
-*   you may not use this file except in compliance with the License.
-*   You may obtain a copy of the License at
-*
-*       http://www.apache.org/licenses/LICENSE-2.0
-*
-*   Unless required by applicable law or agreed to in writing, software
-*   distributed under the License is distributed on an "AS IS" BASIS,
-*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*   See the License for the specific language governing permissions and
-*   limitations under the License.
-*
-*/
+ *   Copyright 2016 Marco Gomiero
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *
+ */
 
-package com.prof.dbtest.UI;
+
+package com.prof.dbtest.ui;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -31,8 +32,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.prof.dbtest.DB.DBHelper;
-import com.prof.dbtest.Data.Exam;
+import com.prof.dbtest.db.DBHelper;
+import com.prof.dbtest.data.Exam;
 import com.prof.dbtest.R;
 
 import java.util.ArrayList;
@@ -45,19 +46,19 @@ public class AddExam extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_exam);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         //open a db instance
         db = new DBHelper(getApplicationContext());
 
-        final Spinner stud_id = (Spinner) findViewById(R.id.spinner2);
-        final EditText examID = (EditText) findViewById(R.id.edit_id);
-        final Spinner mark = (Spinner) findViewById(R.id.spinner);
+        final Spinner stud_id = findViewById(R.id.spinner2);
+        final EditText examID = findViewById(R.id.edit_id);
+        final Spinner mark = findViewById(R.id.spinner);
 
         //populate the spinner with the id of the student already present in the db
         ArrayList<String> idList =  db.getStudId();
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item,idList);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_spinner_item,idList);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         stud_id.setAdapter(spinnerAdapter);
         stud_id.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -73,13 +74,12 @@ public class AddExam extends AppCompatActivity {
        });
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.addEx);
+        FloatingActionButton fab = findViewById(R.id.addEx);
         //add a new exam when the fab is clicked
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Exam e = new Exam();
+        fab.setOnClickListener(v -> {
+            Exam e = new Exam();
 
+            try {
                 int id = Integer.valueOf(examID.getText().toString());
                 int studId = Integer.valueOf(stud_id.getSelectedItem().toString());
                 int eval = Integer.valueOf(mark.getSelectedItem().toString());
@@ -92,6 +92,8 @@ public class AddExam extends AppCompatActivity {
 
                 Toast.makeText(AddExam.this, "Exam Added", Toast.LENGTH_SHORT).show();
                 finish();
+            } catch (Exception ex) {
+                Toast.makeText(AddExam.this, "Unable to add exam. Check the data", Toast.LENGTH_SHORT).show();
             }
         });
 

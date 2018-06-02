@@ -10,7 +10,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.prof.dbtest.UI.AddStudent"
+    tools:context="com.prof.dbtest.ui.AddStudent"
     tools:showIn="@layout/activity_add_exam">
 
     <TextView
